@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PetSaúde">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2563eb">
+<title>PetSaúde Mobile</title>
+<style>
+  :root {
+    --azul: #2563eb;
+    --azul-claro: #dbeafe;
+    --azul-escuro: #1e40af;
+    --verde: #16a34a;
+    --verde-claro: #dcfce7;
+    --vermelho: #dc2626;
+    --vermelho-claro: #fee2e2;
+    --laranja: #ea580c;
+    --cinza: #64748b;
+    --cinza-claro: #f8fafc;
+    --texto: #0f172a;
+    --borda: #e2e8f0;
+    --sombra: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --radius: 18px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f1f5f9;
+    color: var(--texto);
+    min-height: 100vh;
+    padding-bottom: 100px;
+    overscroll-behavior-y: none;
+  }
+
+  /* HEADER MOBILE */
+  header {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #fff;
+    padding: 16px 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .header-top h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; }
+  .header-top .ico-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .header-top .ico-btn:active { background: rgba(255, 255, 255, 0.35); }
+
+  /* SELETOR DE PET */
+  .pet-switcher {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    max-width: 600px;
+    margin-left: auto; margin-right: auto;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .pet-switcher::-webkit-scrollbar { display: none; }
+
+  .pet-chip {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 16px 10px 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .pet-chip.active {
+    background: #fff;
+    color: var(--azul-escuro);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  .pet-chip .emoji { font-size: 1.15rem; }
+  .pet-chip.add {
+    padding: 10px 16px;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* CONTAINER */
+  .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+  /* CARD DO PET */
+  .pet-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pet-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  }
+  .pet-avatar {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 3px #fff, 0 4px 10px rgba(37, 99, 235, 0.15);
+  }
+  .pet-info { flex: 1; min-width: 0; }
+  .pet-info h2 {
+    font-size: 1.3rem;
+    color: var(--texto);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pet-info h2 .tag {
+    font-size: 0.65rem;
+    background: var(--azul-claro);
+    color: var(--azul-escuro);
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .pet-info p { font-size: 0.85rem; color: var(--cinza); margin-top: 2px; }
+
+  /* BOTÕES */
+  button { border: none; font-family: inherit; font-weight: 700; cursor: pointer; transition: transform 0.1s; }
+  button:active { transform: scale(0.96); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    width: 100%;
+    padding: 16px;
+    font-size: 1rem;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-small {
+    background: var(--cinza-claro);
+    color: var(--cinza);
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+  }
+
+  /* PROGRESSO */
+  .progress-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra);
+  }
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-head span:first-child { font-size: 0.85rem; color: var(--cinza); font-weight: 700; }
+  .progress-head span:last-child { font-size: 1.05rem; font-weight: 800; color: var(--azul); }
+  .progress-bar {
+    height: 10px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    padding: 6px;
+    border-radius: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra);
+  }
+  .tab {
+    flex: 1;
+    background: transparent;
+    color: var(--cinza);
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 700;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+
+  /* BUSCA */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border: 2px solid var(--borda);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #fff;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--azul); }
+  .search-wrap::before {
+    content: "🔍";
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    opacity: 0.5;
+  }
+
+  /* LEMBRETES */
+  .reminder {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--sombra);
+    border-left: 5px solid var(--azul);
+  }
+  .reminder.urgent { border-left-color: var(--vermelho); background: #fffdfd; }
+  .reminder.soon { border-left-color: var(--laranja); }
+  .reminder.done { border-left-color: var(--verde); opacity: 0.65; }
+
+  .reminder-icon {
+    font-size: 1.5rem;
+    width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cinza-claro);
+    border-radius: 14px;
+    flex-shrink: 0;
+  }
+
+  .reminder-body { flex: 1; min-width: 0; }
+  .reminder-body strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--texto);
+  }
+  .reminder-body small { color: var(--cinza); font-size: 0.8rem; }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 800;
+  }
+  .badge.blue { background: var(--azul-claro); color: var(--azul-escuro); }
+  .badge.green { background: var(--verde-claro); color: #166534; }
+  .badge.red { background: var(--vermelho-claro); color: #991b1b; }
+  .badge.orange { background: #fed7aa; color: #9a3412; }
+
+  /* HISTÓRICO */
+  .hist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borda);
+  }
+  .hist-item:last-child { border-bottom: none; }
+
+  /* PESO */
+  .weight-chart {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--sombra);
+    margin-bottom: 14px;
+  }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 120px;
+    margin-top: 16px;
+    padding-bottom: 24px;
+  }
+  .bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    position: relative;
+  }
+  .bar {
+    width: 100%;
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
+    border-radius: 6px 6px 0 0;
+    min-height: 8px;
+  }
+  .bar-value {
+    position: absolute;
+    top: -20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--azul-escuro);
+  }
+  .bar-label {
+    position: absolute;
+    bottom: -22px;
+    font-size: 0.7rem;
+    color: var(--cinza);
+  }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra);
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--texto);
+    margin: 4px 4px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title .count {
+    font-size: 0.75rem;
+    background: var(--azul-claro);
+    color: var(--azul-escuro);
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  .empty {
+    text-align: center;
+    color: #94a3b8;
+    padding: 32px 16px;
+    font-size: 0.9rem;
+  }
+  .empty .big { font-size: 2.5rem; display: block; margin-bottom: 8px; opacity: 0.6; }
+
+  /* MODAL (BOTTOM SHEET PARA MOBILE) */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-bg.active { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 20px 32px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.25s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal-handle {
+    width: 36px; height: 5px;
+    background: var(--borda);
+    border-radius: 10px;
+    margin: 0 auto 16px;
+  }
+  .modal h3 { margin-bottom: 16px; font-size: 1.2rem; font-weight: 800; }
+  .modal label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--cinza);
+    margin: 14px 0 6px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--borda);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+  }
+  .modal input:focus, .modal select:focus { border-color: var(--azul); }
+
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .type-opt {
+    background: var(--cinza-claro);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 12px 4px;
+    font-size: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--cinza);
+  }
+  .type-opt .emoji { display: block; font-size: 1.4rem; margin-bottom: 4px; }
+  .type-opt.active {
+    background: var(--azul-claro);
+    border-color: var(--azul);
+    color: var(--azul-escuro);
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+  .modal-actions button { flex: 1; padding: 16px; border-radius: 14px; font-size: 1rem; }
+  .btn-cancel { background: var(--cinza-claro); color: var(--cinza); }
+
+  /* NAV INFERIOR MOBILE */
+  nav.bottom {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 12px 14px;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+    z-index: 60;
+  }
+  .nav-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 0;
+    font-size: 0.7rem;
+    color: var(--cinza);
+    font-weight: 700;
+    border-radius: 12px;
+  }
+  .nav-btn .emoji { font-size: 1.4rem; }
+  .nav-btn.active { color: var(--azul); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #0f172a;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 200;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  footer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    padding: 24px 16px 8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>🐾 PetSaúde</h1>
+    <button class="ico-btn" title="Configurações" onclick="exportData()">⚙️</button>
+  </div>
+  <div class="pet-switcher" id="petSwitcher"></div>
+</header>
+
+<div class="container">
+
+  <!-- CARD DO PET -->
+  <div class="pet-card" id="petCard"></div>
+
+  <!-- PROGRESSO -->
+  <div class="progress-card">
+    <div class="progress-head">
+      <span>Saúde em dia</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- TABS DE CONTEÚDO -->
+  <div class="tabs">
+    <button class="tab active" data-page="lembretes" onclick="switchTab('lembretes')">⏰ Lembretes</button>
+    <button class="tab" data-page="historico" onclick="switchTab('historico')">📋 Histórico</button>
+    <button class="tab" data-page="peso" onclick="switchTab('peso')">⚖️ Peso</button>
+  </div>
+
+  <!-- PÁGINA: LEMBRETES -->
+  <div class="page active" id="page-lembretes">
+    <div class="search-wrap">
+      <input type="text" id="busca" placeholder="Buscar lembrete..." oninput="render()">
+    </div>
+
+    <div class="section-title">
+      <span>Próximos</span>
+      <span class="count" id="countPend">0</span>
+    </div>
+    <div id="remindersList"></div>
+
+    <button class="btn-primary" onclick="openModal()" style="margin-top: 14px;">
+      ➕ Adicionar lembrete
+    </button>
+  </div>
+
+  <!-- PÁGINA: HISTÓRICO -->
+  <div class="page" id="page-historico">
+    <div class="section-title">
+      <span>Concluídos</span>
+      <span class="count" id="countDone">0</span>
+    </div>
+    <div class="card" id="historyList"></div>
+  </div>
+
+  <!-- PÁGINA: PESO -->
+  <div class="page" id="page-peso">
+    <div class="weight-chart">
+      <div class="section-title" style="margin: 0 0 4px;">
+        <span>Evolução do peso</span>
+        <span class="count" id="currentWeight">—</span>
+      </div>
+      <div class="chart-bars" id="chartBars"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin: 0 0 10px;">
+        <span>Registrar peso</span>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <input type="number" id="weightInput" placeholder="Ex: 28.5" step="0.1"
+               style="flex:1; padding:12px; border:2px solid var(--borda); border-radius:12px; font-size:1rem; font-family:inherit; outline:none;">
+        <button class="btn-primary" style="width: auto; padding: 12px 20px;" onclick="addWeight()">Salvar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin: 0 0 10px;">
+        <span>Histórico de peso</span>
+      </div>
+      <div id="weightHistory"></div>
+    </div>
+  </div>
+
+  <footer>PetSaúde © 2026 — Dados salvos localmente</footer>
+</div>
+
+<!-- NAVEGAÇÃO INFERIOR FIXA -->
+<nav class="bottom">
+  <button class="nav-btn active" data-page="lembretes" onclick="switchTab('lembretes')">
+    <span class="emoji">⏰</span> Lembretes
+  </button>
+  <button class="nav-btn" data-page="historico" onclick="switchTab('historico')">
+    <span class="emoji">📋</span> Histórico
+  </button>
+  <button class="nav-btn" data-page="peso" onclick="switchTab('peso')">
+    <span class="emoji">⚖️</span> Peso
+  </button>
+</nav>
+
+<!-- MODAL LEMBRETE -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modalTitle">Novo lembrete</h3>
+
+    <label>Tipo</label>
+    <div class="type-grid" id="typeGrid">
+      <div class="type-opt active" data-type="vacina"><span class="emoji">💉</span>Vacina</div>
+      <div class="type-opt" data-type="vermifugo"><span class="emoji">💊</span>Vermífugo</div>
+      <div class="type-opt" data-type="antipulgas"><span class="emoji">🐜</span>Antipulgas</div>
+      <div class="type-opt" data-type="consulta"><span class="emoji">🩺</span>Consulta</div>
+    </div>
+
+    <label>Descrição</label>
+    <input type="text" id="inputDesc" placeholder="Ex: Vacina V10 anual" maxlength="60">
+
+    <label>Data</label>
+    <input type="date" id="inputDate">
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" style="width:auto" onclick="saveReminder()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PET -->
+<div class="modal-bg" id="modalPetBg">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modalPetTitle">Novo pet</h3>
+
+    <label>Nome</label>
+    <input type="text" id="petName" placeholder="Ex: Rex" maxlength="30">
+
+    <label>Espécie</label>
+    <select id="petSpecies">
+      <option value="Cão">🐶 Cão</option>
+      <option value="Gato">🐱 Gato</option>
+      <option value="Ave">🐦 Ave</option>
+      <option value="Roedor">🐹 Roedor</option>
+      <option value="Outro">🐾 Outro</option>
+    </select>
+
+    <label>Raça</label>
+    <input type="text" id="petBreed" placeholder="Ex: Labrador" maxlength="30">
+
+    <label>Idade</label>
+    <input type="text" id="petAge" placeholder="Ex: 3 anos" maxlength="15">
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePetModal()">Cancelar</button>
+      <button class="btn-primary" style="width:auto" onclick="savePet()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var STORAGE_KEY = "petsaude_v2";
+  var state = { pets: [], currentPetId: null };
+
+  var icons = { vacina: "💉", vermifugo: "💊", antipulgas: "🐜", consulta: "🩺" };
+  var typeNames = { vacina: "Vacina", vermifugo: "Vermífugo", antipulgas: "Antipulgas", consulta: "Consulta" };
+  var speciesEmoji = { "Cão": "🐶", "Gato": "🐱", "Ave": "🐦", "Roedor": "🐹", "Outro": "🐾" };
+
+  var editingId = null;
+  var editingPetId = null;
+  var selectedType = "vacina";
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) state = JSON.parse(raw);
+    } catch (e) { console.warn("Erro ao carregar:", e); }
+
+    if (!state.pets || state.pets.length === 0) {
+      state = {
+        currentPetId: 1,
+        pets: [{
+          id: 1,
+          name: "Rex",
+          species: "Cão",
+          breed: "Labrador",
+          age: "3 anos",
+          weights: [
+            { date: "2026-04-10", value: 26.5 },
+            { date: "2026-06-15", value: 27.2 },
+            { date: "2026-08-20", value: 28.0 },
+            { date: "2026-10-01", value: 28.5 }
+          ],
+          reminders: [
+            { id: 101, type: "vacina", desc: "Vacina V10", date: "2026-10-15", done: false },
+            { id: 102, type: "vermifugo", desc: "Vermífugo trimestral", date: "2026-10-25", done: false },
+            { id: 103, type: "antipulgas", desc: "Antipulgas mensal", date: "2026-10-10", done: false },
+            { id: 104, type: "consulta", desc: "Check-up anual", date: "2026-09-01", done: true }
+          ]
+        }]
+      };
+    }
+  }
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } 
+    catch (e) { console.warn("Erro ao salvar:", e); }
+  }
+
+  function currentPet() {
+    return state.pets.find(function(p) { return p.id === state.currentPetId; }) || state.pets[0];
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+
+  function daysUntil(iso) {
+    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    var alvo = new Date(iso + "T00:00:00");
+    return Math.round((alvo - hoje) / 86400000);
+  }
+
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.classList.remove("show"); }, 2000);
+  }
+
+  function renderPetSwitcher() {
+    var el = document.getElementById("petSwitcher");
+    var html = state.pets.map(function(p) {
+      var active = p.id === state.currentPetId ? " active" : "";
+      return '<button class="pet-chip' + active + '" onclick="selectPet(' + p.id + ')">' +
+             '<span class="emoji">' + (speciesEmoji[p.species] || "🐾") + '</span>' +
+             p.name + '</button>';
+    }).join("");
+    html += '<button class="pet-chip add" onclick="openPetModal()">＋</button>';
+    el.innerHTML = html;
+  }
+
+  function renderPetCard() {
+    var p = currentPet();
+    var el = document.getElementById("petCard");
+    var emoji = speciesEmoji[p.species] || "🐾";
+    var details = [p.species, p.breed, p.age].filter(Boolean).join(" • ");
+    
+    el.innerHTML =
+      '<div class="pet-avatar">' + emoji + '</div>' +
+      '<div class="pet-info">' +
+        '<h2>' + p.name + ' <span class="tag">' + (p.species || "Pet") + '</span></h2>' +
+        '<p>' + (details || "Sem detalhes") + '</p>' +
+      '</div>' +
+      '<button class="btn-small" onclick="openPetModal(' + p.id + ')">✏️</button>';
+  }
+
+  function renderReminders() {
+    var p = currentPet();
+    var query = document.getElementById("busca").value.toLowerCase();
+    var list = p.reminders || [];
+    
+    var pend = list.filter(function(r) { return !r.done; });
+    var done = list.filter(function(r) { return r.done; });
+
+    var pct = list.length ? Math.round((done.length / list.length) * 100) : 100;
+    document.getElementById("progressPct").textContent = pct + "%";
+    document.getElementById("progressFill").style.width = pct + "%";
+
+    if (query) {
+      pend = pend.filter(function(r) { return r.desc.toLowerCase().includes(query); });
+      done = done.filter(function(r) { return r.desc.toLowerCase().includes(query); });
+    }
+
+    pend.sort(function(a, b) { return a.date.localeCompare(b.date); });
+    done.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+    document.getElementById("countPend").textContent = pend.length;
+    document.getElementById("countDone").textContent = done.length;
+
+    var pendEl = document.getElementById("remindersList");
+    if (!pend.length) {
+      pendEl.innerHTML = '<div class="empty"><span class="big">🎉</span>Sem pendências ativas</div>';
+    } else {
+      pendEl.innerHTML = pend.map(function(r) {
+        var days = daysUntil(r.date);
+        var stateClass = days < 0 ? "urgent" : (days <= 3 ? "soon" : "");
+        var badge = days < 0 ? '<span class="badge red">Atrasado</span>' :
+                   (days === 0 ? '<span class="badge orange">Hoje!</span>' :
+                   '<span class="badge blue">Em ' + days + 'd</span>');
+
+        return '<div class="reminder ' + stateClass + '">' +
+          '<div class="reminder-icon">' + (icons[r.type] || "📌") + '</div>' +
+          '<div class="reminder-body">' +
+            '<strong>' + r.desc + '</strong>' +
+            '<small>' + formatDate(r.date) + '</small>' +
+          '</div>' +
+          '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">' +
+            badge +
+            '<div style="display:flex; gap:4px;">' +
+              '<button class="btn-small" onclick="toggleDone(' + r.id + ')">✅</button>' +
+              '<button class="btn-small" onclick="openModal(' + r.id + ')">✏️</button>' +
+              '<button class="btn-small" onclick="deleteReminder(' + r.id + ')">🗑️</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    var histEl = document.getElementById("historyList");
+    if (!done.length) {
+      histEl.innerHTML = '<div class="empty"><span class="big">📋</span>Nenhum histórico</div>';
+    } else {
+      histEl.innerHTML = done.map(function(r) {
+        return '<div class="hist-item">' +
+          '<div class="reminder-icon">' + (icons[r.type] || "📌") + '</div>' +
+          '<div class="reminder-body">' +
+            '<strong>' + r.desc + '</strong>' +
+            '<small>Concluído • ' + formatDate(r.date) + '</small>' +
+          '</div>' +
+          '<button class="btn-small" onclick="toggleDone(' + r.id + ')">↩️</button>' +
+        '</div>';
+      }).join("");
+    }
+  }
+
+  function renderWeight() {
+    var p = currentPet();
+    var weights = (p.weights || []).slice().sort(function(a, b) { return a.date.localeCompare(b.date); });
+
+    var currEl = document.getElementById("currentWeight");
+    var barsEl = document.getElementById("chartBars");
+    var histEl = document.getElementById("weightHistory");
+
+    if (!weights.length) {
+      currEl.textContent = "—";
+      barsEl.innerHTML = '<div class="empty" style="width:100%">Sem histórico de peso</div>';
+      histEl.innerHTML = '<div class="empty">Sem registros</div>';
+      return;
+    }
+
+    var last = weights[weights.length - 1];
+    currEl.textContent = last.value + " kg";
+
+    var maxVal = Math.max.apply(Math, weights.map(function(w) { return w.value; })) || 1;
+    var recent = weights.slice(-5);
+
+    barsEl.innerHTML = recent.map(function(w) {
+      var heightPct = Math.max(15, Math.round((w.value / maxVal) * 100));
+      return '<div class="bar-wrap">' +
+        '<div class="bar" style="height:' + heightPct + '%">' +
+          '<span class="bar-value">' + w.value + '</span>' +
+        '</div>' +
+        '<span class="bar-label">' + formatDate(w.date).substring(0, 5) + '</span>' +
+      '</div>';
+    }).join("");
+
+    histEl.innerHTML = weights.slice().reverse().map(function(w, idx) {
+      return '<div class="hist-item">' +
+        '<span>⚖️</span>' +
+        '<div class="reminder-body">' +
+          '<strong>' + w.value + ' kg</strong>' +
+          '<small>' + formatDate(w.date) + '</small>' +
+        '</div>' +
+        '<button class="btn-small" onclick="deleteWeight(' + (weights.length - 1 - idx) + ')">🗑️</button>' +
+      '</div>';
+    }).join("");
+  }
+
+  function render() {
+    renderPetSwitcher();
+    renderPetCard();
+    renderReminders();
+    renderWeight();
+  }
+
+  function selectPet(id) {
+    state.currentPetId = id;
+    saveState();
+    render();
+  }
+
+  function openPetModal(id) {
+    editingPetId = id || null;
+    var modal = document.getElementById("modalPetBg");
+    document.getElementById("modalPetTitle").textContent = id ? "Editar pet" : "Novo pet";
+
+    if (id) {
+      var p = state.pets.find(function(x) { return x.id === id; });
+      document.getElementById("petName").value = p.name;
+      document.getElementById("petSpecies").value = p.species;
+      document.getElementById("petBreed").value = p.breed;
+      document.getElementById("petAge").value = p.age;
+    } else {
+      document.getElementById("petName").value = "";
+      document.getElementById("petSpecies").value = "Cão";
+      document.getElementById("petBreed").value = "";
+      document.getElementById("petAge").value = "";
+    }
+    modal.classList.add("active");
+  }
+
+  function closePetModal() {
+    document.getElementById("modalPetBg").classList.remove("active");
+  }
+
+  function savePet() {
+    var name = document.getElementById("petName").value.trim();
+    if (!name) { toast("Informe o nome!"); return; }
+
+    var species = document.getElementById("petSpecies").value;
+    var breed = document.getElementById("petBreed").value.trim();
+    var age = document.getElementById("petAge").value.trim();
+
+    if (editingPetId) {
+      var p = state.pets.find(function(x) { return x.id === editingPetId; });
+      p.name = name; p.species = species; p.breed = breed; p.age = age;
+      toast("Pet atualizado!");
+    } else {
+      var newId = uid();
+      state.pets.push({ id: newId, name: name, species: species, breed: breed, age: age, weights: [], reminders: [] });
+      state.currentPetId = newId;
+      toast("Pet cadastrado!");
+    }
+
+    saveState();
+    closePetModal();
+    render();
+  }
+
+  function openModal(id) {
+    editingId = id || null;
+    var modal = document.getElementById("modalBg");
+    document.getElementById("modalTitle").textContent = id ? "Editar lembrete" : "Novo lembrete";
+
+    if (id) {
+      var p = currentPet();
+      var r = p.reminders.find(function(x) { return x.id === id; });
+      selectedType = r.type;
+      document.getElementById("inputDesc").value = r.desc;
+      document.getElementById("inputDate").value = r.date;
+    } else {
+      selectedType = "vacina";
+      document.getElementById("inputDesc").value = "";
+      document.getElementById("inputDate").value = new Date().toISOString().split("T")[0];
+    }
+
+    updateTypeGrid();
+    modal.classList.add("active");
+  }
+
+  function closeModal() {
+    document.getElementById("modalBg").classList.remove("active");
+  }
+
+  function updateTypeGrid() {
+    var opts = document.querySelectorAll(".type-opt");
+    opts.forEach(function(opt) {
+      if (opt.getAttribute("data-type") === selectedType) opt.classList.add("active");
+      else opt.classList.remove("active");
+    });
+  }
+
+  document.getElementById("typeGrid").addEventListener("click", function(e) {
+    var opt = e.target.closest(".type-opt");
+    if (opt) {
+      selectedType = opt.getAttribute("data-type");
+      updateTypeGrid();
+    }
+  });
+
+  function saveReminder() {
+    var desc = document.getElementById("inputDesc").value.trim();
+    var date = document.getElementById("inputDate").value;
+
+    if (!desc || !date) { toast("Preencha os campos!"); return; }
+
+    var p = currentPet();
+    if (editingId) {
+      var r = p.reminders.find(function(x) { return x.id === editingId; });
+      r.type = selectedType; r.desc = desc; r.date = date;
+      toast("Lembrete atualizado!");
+    } else {
+      p.reminders.push({ id: uid(), type: selectedType, desc: desc, date: date, done: false });
+      toast("Lembrete salvo!");
+    }
+
+    saveState();
+    closeModal();
+    render();
+  }
+
+  function toggleDone(id) {
+    var p = currentPet();
+    var r = p.reminders.find(function(x) { return x.id === id; });
+    if (r) {
+      r.done = !r.done;
+      saveState();
+      render();
+      toast(r.done ? "Concluído!" : "Reativado!");
+    }
+  }
+
+  function deleteReminder(id) {
+    var p = currentPet();
+    p.reminders = p.reminders.filter(function(x) { return x.id !== id; });
+    saveState();
+    render();
+    toast("Removido.");
+  }
+
+  function addWeight() {
+    var input = document.getElementById("weightInput");
+    var val = parseFloat(input.value);
+    if (!val || val <= 0) { toast("Informe um peso válido!"); return; }
+
+    var p = currentPet();
+    if (!p.weights) p.weights = [];
+    var today = new Date().toISOString().split("T")[0];
+
+    p.weights.push({ date: today, value: val });
+    input.value = "";
+    saveState();
+    renderWeight();
+    toast("Peso salvo!");
+  }
+
+  function deleteWeight(index) {
+    var p = currentPet();
+    if (p.weights && p.weights[index]) {
+      p.weights.splice(index, 1);
+      saveState();
+      renderWeight();
+      toast("Removido.");
+    }
+  }
+
+  function switchTab(pageId) {
+    document.querySelectorAll(".page").forEach(function(pg) { pg.classList.remove("active"); });
+    var target = document.getElementById("page-" + pageId);
+    if (target) target.classList.add("active");
+
+    document.querySelectorAll(".tab, .nav-btn").forEach(function(t) {
+      if (t.getAttribute("data-page") === pageId) t.classList.add("active");
+      else t.classList.remove("active");
+    });
+  }
+
+  function exportData() {
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+    var dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "petsaude_backup.json");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    toast("Exportado!");
+  }
+
+  loadState();
+  render();
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then((reg) => console.log("[SW] registrado:", reg.scope))
+        .catch((err) => console.warn("[SW] erro:", err));
+    });
+  }
+</script>
+</body>
+</html>
